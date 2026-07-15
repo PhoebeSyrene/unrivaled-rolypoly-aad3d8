@@ -1,6 +1,5 @@
 backend:
-  name: github
-  repo: PhoebeSyrene/unrivaled-rolypoly-aad3d8
+  name: git-gateway
   branch: main
 
 media_folder: images
