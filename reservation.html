@@ -99,13 +99,17 @@ nav.tabs a.active{color:var(--lacquer);}
 .form-note strong{color:var(--ink);font-weight:500;}
 
 .gform-wrap{
-  display:flex;
-  justify-content:center;
+  background:var(--card);
+  border:1px solid var(--hair);
+  overflow:hidden;
+  max-width:780px;
+  margin:0 auto;
 }
 .gform-wrap iframe{
   width:100%;
-  max-width:640px;
   border:none;
+  display:block;
+  margin-top:-64px;
 }
 
 @media (max-width:600px){
