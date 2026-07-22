@@ -91,6 +91,16 @@ body{background:var(--paper);color:var(--ink);font-family:'Helvetica Neue',Arial
 .status-badge{display:inline-block;font-size:0.68rem;padding:2px 10px;border-radius:10px;font-weight:600;letter-spacing:0.06em;}
 .status-official{background:#e8f5e9;color:var(--green);}
 .status-candidate{background:#fff8e1;color:#f57f17;}
+.status-hidden{background:#f0f0f0;color:#aaa;}
+
+/* hidden candidate */
+.work-item.is-hidden{opacity:0.45;}
+.work-item.is-hidden .work-item-header{background:repeating-linear-gradient(135deg,var(--paper-deep),var(--paper-deep) 6px,var(--hair) 6px,var(--hair) 12px);}
+
+/* visibility toggle btn */
+.btn-ghost{background:transparent;border:1px solid var(--hair);color:var(--ink-soft);}
+.btn-ghost:hover{border-color:var(--ink-soft);color:var(--ink);}
+.btn-ghost.is-hidden{border-color:var(--ink-soft);color:var(--ink-soft);}
 
 /* Tag pills in header */
 .header-tags{display:flex;gap:4px;flex-wrap:wrap;}
@@ -306,7 +316,7 @@ function loadData() {
 }
 
 function defaultWork() {
-  return { id: Date.now(), title: '', subtitle: '', genre: '', players: '', duration: '', description: '', price: '', image: '', imageName: '' };
+  return { id: Date.now(), title: '', subtitle: '', genre: '', players: '', duration: '', description: '', price: '', tags: [], image: '', imageName: '' };
 }
 
 function defaultCandidate() {
@@ -357,7 +367,6 @@ function closePromoteModal(e) {
 function promoteCandidate(id) {
   const c = candidates.find(c => c.id === id);
   if (!c) return;
-  // Copy candidate fields into a new work entry
   const newWork = {
     id: Date.now(),
     title: c.title,
@@ -367,18 +376,43 @@ function promoteCandidate(id) {
     duration: '',
     description: c.description,
     price: '',
+    tags: c.tags || [],
     image: c.image,
     imageName: c.imageName,
   };
   works.push(newWork);
   localStorage.setItem('works_data', JSON.stringify(works));
-  // Remove from candidates
   candidates = candidates.filter(c => c.id !== id);
   localStorage.setItem('candidates_data', JSON.stringify(candidates));
   closePromoteModal();
   renderWorks();
   renderCandidates();
   showToast(`『${newWork.title || '（無題）'}』をシナリオ一覧に追加しました`, 'success');
+}
+
+function demoteWork(id) {
+  const w = works.find(w => w.id === id);
+  if (!w) return;
+  if (!confirm(`『${w.title || '（無題）'}』を候補シナリオに戻しますか？`)) return;
+  const restoredCandidate = {
+    id: Date.now(),
+    title: w.title,
+    subtitle: w.subtitle,
+    genre: w.genre,
+    players: w.players || '',
+    status: '準備中',
+    description: w.description,
+    tags: w.tags || [],
+    image: w.image,
+    imageName: w.imageName,
+  };
+  candidates.unshift(restoredCandidate);
+  localStorage.setItem('candidates_data', JSON.stringify(candidates));
+  works = works.filter(w => w.id !== id);
+  localStorage.setItem('works_data', JSON.stringify(works));
+  renderWorks();
+  renderCandidates();
+  showToast(`『${restoredCandidate.title || '（無題）'}』を候補に戻しました`, 'success');
 }
 
 function removeWork(id) {
@@ -390,15 +424,21 @@ function removeWork(id) {
 
 function renderWorks() {
   const list = document.getElementById('works-list');
-  list.innerHTML = works.map((w) => `
+  list.innerHTML = works.map((w) => {
+    const tagsHTML = (w.tags && w.tags.length > 0)
+      ? w.tags.map(t => `<span class="header-tag-pill">${t}</span>`).join('')
+      : '';
+    return `
     <div class="work-item" id="work-${w.id}" draggable="true" data-id="${w.id}" data-type="work">
       <div class="work-item-header">
         <span class="title">
           <span class="drag-handle" title="ドラッグして並び替え">☰</span>
           <span class="title-text">${w.title || '（無題）'}</span>
           <span class="status-badge status-official">公演中</span>
+          <span class="header-tags">${tagsHTML}</span>
         </span>
         <div class="actions">
+          <button class="btn btn-secondary btn-sm" onclick="demoteWork(${w.id})">候補に戻す</button>
           <button class="btn btn-danger btn-sm" onclick="removeWork(${w.id})">削除</button>
         </div>
       </div>
@@ -438,6 +478,10 @@ function renderWorks() {
             </div>
           </div>
           <div class="work-field">
+            <label>タグ（複数選択可）</label>
+            <div class="tag-group">${renderTagToggles(w.id, w.tags, 'work')}</div>
+          </div>
+          <div class="work-field">
             <label>紹介文</label>
             <textarea oninput="updateWork(${w.id}, 'description', this.value)">${escHtml(w.description)}</textarea>
           </div>
@@ -447,8 +491,8 @@ function renderWorks() {
           </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
   initDragDrop('works-list', works, 'works_data');
 }
 
@@ -492,26 +536,57 @@ function toggleTag(id, tag) {
   if (btn) btn.classList.toggle('active', c.tags.includes(tag));
 }
 
-function renderTagToggles(id, currentTags) {
+function renderTagToggles(id, currentTags, type) {
   const tags = currentTags || [];
+  const fn = type === 'work' ? 'toggleWorkTag' : 'toggleTag';
   return CANDIDATE_TAGS.map(tag => {
     const isActive = tags.includes(tag);
-    return `<button type="button" class="tag-toggle${isActive ? ' active' : ''}" data-tag="${tag}" onclick="toggleTag(${id}, '${tag}')">${tag}</button>`;
+    return `<button type="button" class="tag-toggle${isActive ? ' active' : ''}" data-tag="${tag}" onclick="${fn}(${id}, '${tag}')">${tag}</button>`;
   }).join('');
+}
+
+function toggleWorkTag(id, tag) {
+  const w = works.find(w => w.id === id);
+  if (!w) return;
+  if (!w.tags) w.tags = [];
+  const idx = w.tags.indexOf(tag);
+  if (idx === -1) w.tags.push(tag); else w.tags.splice(idx, 1);
+  localStorage.setItem('works_data', JSON.stringify(works));
+  const header = document.querySelector(`#work-${id} .header-tags`);
+  if (header) header.innerHTML = w.tags.map(t => `<span class="header-tag-pill">${t}</span>`).join('');
+  const btn = document.querySelector(`#work-${id} [data-tag="${tag}"]`);
+  if (btn) btn.classList.toggle('active', w.tags.includes(tag));
+}
+
+function toggleCandidateVisibility(id) {
+  const c = candidates.find(c => c.id === id);
+  if (!c) return;
+  c.hidden = !c.hidden;
+  localStorage.setItem('candidates_data', JSON.stringify(candidates));
+  const item = document.getElementById(`candidate-${id}`);
+  if (item) item.classList.toggle('is-hidden', c.hidden);
+  const badge = document.querySelector(`#candidate-${id} .status-badge`);
+  if (badge) {
+    badge.textContent = c.hidden ? '非表示' : c.status;
+    badge.className = `status-badge ${c.hidden ? 'status-hidden' : 'status-candidate'}`;
+  }
+  const btn = document.querySelector(`#candidate-${id} .vis-btn`);
+  if (btn) { btn.textContent = c.hidden ? '👁 表示する' : '🙈 非表示'; btn.classList.toggle('is-hidden', c.hidden); }
 }
 
 function renderCandidates() {
   const list = document.getElementById('candidates-list');
   list.innerHTML = candidates.map((c) => `
-    <div class="work-item" id="candidate-${c.id}" draggable="true" data-id="${c.id}" data-type="candidate">
+    <div class="work-item${c.hidden ? ' is-hidden' : ''}" id="candidate-${c.id}" draggable="true" data-id="${c.id}" data-type="candidate">
       <div class="work-item-header">
         <span class="title">
           <span class="drag-handle" title="ドラッグして並び替え">☰</span>
           <span class="title-text">${c.title || '（無題）'}</span>
-          <span class="status-badge status-candidate">${c.status}</span>
+          <span class="status-badge ${c.hidden ? 'status-hidden' : 'status-candidate'}">${c.hidden ? '非表示' : c.status}</span>
           <span class="header-tags">${(c.tags||[]).map(t => `<span class="header-tag-pill">${t}</span>`).join('')}</span>
         </span>
         <div class="actions">
+          <button class="btn btn-ghost btn-sm vis-btn${c.hidden ? ' is-hidden' : ''}" onclick="toggleCandidateVisibility(${c.id})">${c.hidden ? '👁 表示する' : '🙈 非表示'}</button>
           <button class="btn btn-danger btn-sm" onclick="removeCandidate(${c.id})">削除</button>
         </div>
       </div>
@@ -533,7 +608,7 @@ function renderCandidates() {
           <div class="field-row-inline">
             <div class="work-field">
               <label>ステータス</label>
-              <select onchange="updateCandidate(${c.id}, 'status', this.value); this.closest('.work-item').querySelector('.status-badge').textContent = this.value">
+              <select onchange="updateCandidate(${c.id}, 'status', this.value); if(!this.closest('.work-item').classList.contains('is-hidden')){this.closest('.work-item').querySelector('.status-badge').textContent = this.value;}">
                 <option ${c.status==='審査中'?'selected':''}>審査中</option>
                 <option ${c.status==='交渉中'?'selected':''}>交渉中</option>
                 <option ${c.status==='翻訳中'?'selected':''}>翻訳中</option>
@@ -557,7 +632,7 @@ function renderCandidates() {
           </div>
           <div class="work-field">
             <label>タグ（複数選択可）</label>
-            <div class="tag-group">${renderTagToggles(c.id, c.tags)}</div>
+            <div class="tag-group">${renderTagToggles(c.id, c.tags, 'candidate')}</div>
           </div>
           <div class="work-field">
             <label>紹介文</label>
@@ -694,6 +769,9 @@ function generateLineupHTML() {
     const cardsHTML = groupedWorks[g].map(w => {
       const genreStr = [w.players, w.duration].filter(Boolean).join(' ｜ ');
       const priceHTML = w.price ? `<div class="price">${w.price}</div>` : '';
+      const tagsHTML = (w.tags && w.tags.length > 0)
+        ? `<div class="candidate-tags">${w.tags.map(t => `<span class="candidate-tag">${t}</span>`).join('')}</div>`
+        : '';
       return `
   <div class="work-card">
     <div class="work-thumb">
@@ -703,6 +781,7 @@ function generateLineupHTML() {
       ${genreStr ? `<div class="genre">${genreStr}</div>` : ''}
       <h3>${w.title}</h3>
       ${w.subtitle ? `<div class="sub">${w.subtitle}</div>` : ''}
+      ${tagsHTML}
       ${w.description ? `<p>${w.description}</p>` : ''}
       ${priceHTML}
     </div>
@@ -719,7 +798,7 @@ function generateLineupHTML() {
   }).join('\n');
 
   const grouped = {};
-  candidates.forEach(c => {
+  candidates.filter(c => !c.hidden).forEach(c => {
     const g = c.genre || '推理系';
     if (!grouped[g]) grouped[g] = [];
     grouped[g].push(c);
@@ -727,8 +806,10 @@ function generateLineupHTML() {
   const candidatesHTML = genreOrder.filter(g => grouped[g] && grouped[g].length > 0).map(g => {
     const cardsHTML = grouped[g].map(c => {
       const tagsHTML = (c.tags && c.tags.length > 0)
-        ? `<div class="candidate-tags">${c.tags.map(t => `<span class="candidate-tag">${t}</span>`).join('')}</div>`
+        ? c.tags.map(t => `<span class="candidate-tag">${t}</span>`).join('')
         : '';
+      const metaParts = [c.players, c.genre ? (c.genre === '推理系' ? '推理系' : c.genre === '情感系' ? 'エモ系' : c.genre === '恐怖系' ? 'ホラー系' : c.genre === '欢乐系' ? 'コメディ系' : 'メカニクス系') : ''].filter(Boolean).join(' · ');
+      const metaRowHTML = (tagsHTML || metaParts) ? `<div class="candidate-meta-row">${tagsHTML}${metaParts ? `<span class="candidate-meta-text">${metaParts}</span>` : ''}</div>` : '';
       return `
   <div class="candidate-card">
     <div class="candidate-thumb">
@@ -738,7 +819,7 @@ function generateLineupHTML() {
       <div class="status">${c.status}</div>
       <h3>${c.title}</h3>
       ${c.subtitle ? `<div class="sub">${c.subtitle}</div>` : ''}
-      ${tagsHTML}
+      ${metaRowHTML}
       ${c.description ? `<p>${c.description}</p>` : ''}
     </div>
   </div>`;
@@ -806,6 +887,9 @@ section{max-width:1200px;margin:0 auto;padding:80px 40px;}
 .candidate-info p{font-size:0.86rem;color:var(--ink-soft);font-weight:300;max-width:100%;line-height:1.85;}
 .candidate-tags{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 12px;}
 .candidate-tag{font-size:0.68rem;padding:2px 9px;border:1px solid var(--gold);color:var(--gold);border-radius:10px;letter-spacing:0.06em;font-weight:500;}
+.candidate-meta-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 12px;}
+.candidate-meta-row .candidate-tag{margin:0;}
+.candidate-meta-text{font-size:0.72rem;color:var(--ink-soft);letter-spacing:0.06em;}
 @media (max-width:800px){.candidate-card{grid-template-columns:1fr;}.candidate-thumb{width:100%;aspect-ratio:2/1;}}
 .genre-group{margin-bottom:40px;}
 .genre-group-title{font-family:'Noto Serif SC','Noto Serif JP',serif;font-size:1.1rem;font-weight:600;color:var(--ink);letter-spacing:0.16em;padding:12px 24px;background:rgba(193,154,73,0.08);border-left:3px solid var(--gold);margin-bottom:24px;display:block;}
