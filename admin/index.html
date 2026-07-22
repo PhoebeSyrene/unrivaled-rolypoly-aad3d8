@@ -808,7 +808,7 @@ function generateLineupHTML() {
       const tagsHTML = (c.tags && c.tags.length > 0)
         ? c.tags.map(t => `<span class="candidate-tag">${t}</span>`).join('')
         : '';
-      const metaParts = [c.players, c.genre ? (c.genre === '推理系' ? '推理系' : c.genre === '情感系' ? 'エモ系' : c.genre === '恐怖系' ? 'ホラー系' : c.genre === '欢乐系' ? 'コメディ系' : 'メカニクス系') : ''].filter(Boolean).join(' · ');
+      const metaParts = [c.genre ? (c.genre === '推理系' ? '推理系' : c.genre === '情感系' ? 'エモ系' : c.genre === '恐怖系' ? 'ホラー系' : c.genre === '欢乐系' ? 'コメディ系' : 'メカニクス系') : '', c.players].filter(Boolean).join(' · ');
       const metaHTML = metaParts ? `<span class="candidate-meta-text">${metaParts}</span>` : '';
       return `
   <div class="candidate-card">
