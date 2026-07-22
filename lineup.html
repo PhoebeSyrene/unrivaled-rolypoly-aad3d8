@@ -39,6 +39,8 @@ section{max-width:1200px;margin:0 auto;padding:80px 40px;}
 .work-info .sub{font-size:0.83rem;color:var(--ink-soft);margin-bottom:14px;}
 .work-info p{font-size:0.88rem;color:var(--ink-soft);font-weight:300;max-width:100%;line-height:1.9;}
 .work-info .price{font-size:0.9rem;color:var(--ink);margin-top:16px;font-weight:500;}
+.work-info .work-tags{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0 14px;}
+.work-info .work-tag{font-size:0.68rem;padding:2px 9px;border:1px solid var(--gold);color:var(--gold);border-radius:10px;letter-spacing:0.06em;font-weight:500;}
 .work-action{min-width:130px;}
 .btn-primary{background:var(--lacquer);color:#fff;padding:14px 28px;font-size:0.86rem;letter-spacing:0.08em;display:inline-block;transition:background .2s ease;white-space:nowrap;}
 .btn-primary:hover{background:var(--lacquer-deep);}
@@ -52,11 +54,10 @@ section{max-width:1200px;margin:0 auto;padding:80px 40px;}
 .candidate-info h3{font-size:1.05rem;font-weight:500;margin-bottom:6px;}
 .candidate-info .sub{font-size:0.8rem;color:var(--ink-soft);margin-bottom:10px;}
 .candidate-info p{font-size:0.86rem;color:var(--ink-soft);font-weight:300;max-width:100%;line-height:1.85;}
-.candidate-tags{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 12px;}
-.candidate-tag{font-size:0.68rem;padding:2px 9px;border:1px solid var(--gold);color:var(--gold);border-radius:10px;letter-spacing:0.06em;font-weight:500;}
-.candidate-meta-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 12px;}
-.candidate-meta-row .candidate-tag{margin:0;}
-.candidate-meta-text{font-size:0.72rem;color:var(--ink-soft);letter-spacing:0.06em;}
+.candidate-info .title-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin-bottom:6px;}
+.candidate-info .title-row h3{font-size:1.05rem;font-weight:500;margin:0;}
+.candidate-tag{font-size:0.68rem;padding:2px 9px;border:1px solid var(--gold);color:var(--gold);border-radius:10px;letter-spacing:0.06em;font-weight:500;white-space:nowrap;}
+.candidate-meta-text{font-size:0.72rem;color:var(--ink-soft);letter-spacing:0.06em;white-space:nowrap;}
 @media (max-width:800px){.candidate-card{grid-template-columns:1fr;}.candidate-thumb{width:100%;aspect-ratio:2/1;}}
 .genre-group{margin-bottom:40px;}
 .genre-group-title{font-family:'Noto Serif SC','Noto Serif JP',serif;font-size:1.1rem;font-weight:600;color:var(--ink);letter-spacing:0.16em;padding:12px 24px;background:rgba(193,154,73,0.08);border-left:3px solid var(--gold);margin-bottom:24px;display:block;}
@@ -109,16 +110,19 @@ footer a{color:var(--gold);}
 
   <div class="genre-group">
     <div class="genre-group-title">推理系</div>
-    
+
   <div class="candidate-card">
     <div class="candidate-thumb">
       <img src="images/candidate-1784250413949-漓川怪谈簿.jpg" alt="『漓川怪談簿』（りせん かいだんぼ）">
     </div>
     <div class="candidate-info">
-      <div class="status">準備中</div>
-      <h3>『漓川怪談簿』（りせん かいだんぼ）</h3>
+      <div class="status">審査中</div>
+      <div class="title-row">
+        <span class="candidate-tag">店舗限定</span><span class="candidate-tag">先行公開</span>
+        <h3>『漓川怪談簿』（りせん かいだんぼ）</h3>
+        <span class="candidate-meta-text">推理系</span>
+      </div>
       <div class="sub">《漓川怪谈簿》</div>
-      <div class="candidate-meta-row"><span class="candidate-tag">店舗限定</span><span class="candidate-tag">先行公開</span><span class="candidate-meta-text">7人用</span></div>
       <p>常世は、この地の名であると同時に、土地の中央に広がる不気味な湖の名でもある。 古くから、この地の水と土は人々の暮らしを育むだけでなく、数え切れないほどの怪談に語り継がれる妖や怪異を生み出してきたと伝えられている──。</p>
     </div>
   </div>
@@ -129,9 +133,12 @@ footer a{color:var(--gold);}
     </div>
     <div class="candidate-info">
       <div class="status">翻訳中</div>
-      <h3>『死者は幻夜に目覚める』（ししゃは げんやに めざめる）</h3>
+      <div class="title-row">
+        <span class="candidate-tag">店舗限定</span><span class="candidate-tag">先行公開</span>
+        <h3>『死者は幻夜に目覚める』（ししゃは げんやに めざめる）</h3>
+        <span class="candidate-meta-text">推理系</span>
+      </div>
       <div class="sub">《死者在幻夜中醒来》</div>
-      <div class="candidate-meta-row"><span class="candidate-tag">店舗限定</span><span class="candidate-tag">先行公開</span><span class="candidate-meta-text">7人用</span></div>
       <p>川には、無数の灯火を乗せた紙舟が浮かび、 揺れる水面の上で、まるで夜空に散る星々のように淡く瞬いていた。 果ての見えないその川は、やがて彼岸へと流れ着くという。 人々は信じている。 もし灯火を宿した紙舟が無事に川の果てへ辿り着くことができたなら、この世とあの世――二つの世界に隔てられた者たちは、幻夜の中で再び巡り会えるのだと。 しかし、一葉の小舟は波に翻弄され、 多くの紙舟は激しい流れに呑まれ、そのまま川底へと沈んでゆく。 灯火は消え、 紙舟を折った者だけが、なおも帰らぬ人を待ち続ける。 私たちは幾度となく川を遡ろうとする。 ただ、手の届くはずもない、あの儚き彼岸へ辿り着くことを願って――。 ――『未見村民間物語』より</p>
     </div>
   </div>
@@ -142,9 +149,12 @@ footer a{color:var(--gold);}
     </div>
     <div class="candidate-info">
       <div class="status">翻訳中</div>
-      <h3>『幻想の諸因』（げんそうしょいん）</h3>
+      <div class="title-row">
+        <span class="candidate-tag">店舗限定</span><span class="candidate-tag">数量限定</span><span class="candidate-tag">先行公開</span>
+        <h3>『幻想の諸因』（げんそうしょいん）</h3>
+        <span class="candidate-meta-text">推理系 · 7人用</span>
+      </div>
       <div class="sub">《幻想诸因》</div>
-      <div class="candidate-meta-row"><span class="candidate-tag">店舗限定</span><span class="candidate-tag">数量限定</span><span class="candidate-tag">先行公開</span></div>
       <p>かすかに明滅する灯り。 錆びつき、朽ち果てた氷の宮殿。 7人は迷宮の中で目を覚ます。 そこは見知らぬ閉鎖空間。記憶は失われ、それぞれが疑念を胸に抱いていた。 そのとき、一人の熱意に満ちた声が響く。 「皆様、ようこそ《チェスタークラブ》へ。 久しぶりですね。異国の地・青海市で再びお会いできたことを、大変うれしく思います。 本日は、《チェスタークラブ》恒例イベント――『生死を賭けた探索』にご参加いただきます。皆様のご健闘を期待しております。」 しかし、その場から逃れる術はない。 そして何より恐ろしいのは――最も危険な人物が、この7人の中に紛れ込んでいること。 「それでは、ゲームを始めましょう。 皆様の命を賭け金とし、論理と推理で謎を解き明かしてください。 生と死を懸けた探索の幕が、今、上がります。」</p>
     </div>
   </div>
@@ -152,16 +162,19 @@ footer a{color:var(--gold);}
 
   <div class="genre-group">
     <div class="genre-group-title">エモ系</div>
-    
+
   <div class="candidate-card">
     <div class="candidate-thumb">
       <img src="images/candidate-1784250727123-洗玫瑰.jpg" alt="『ロンドンの薔薇を盗み尽くす』">
     </div>
     <div class="candidate-info">
-      <div class="status">準備中</div>
-      <h3>『ロンドンの薔薇を盗み尽くす』</h3>
+      <div class="status">審査中</div>
+      <div class="title-row">
+        <span class="candidate-tag">店舗限定</span><span class="candidate-tag">先行公開</span>
+        <h3>『ロンドンの薔薇を盗み尽くす』</h3>
+        <span class="candidate-meta-text">エモ系 · 6人用</span>
+      </div>
       <div class="sub">《洗劫伦敦所有的玫瑰》</div>
-      <div class="candidate-meta-row"><span class="candidate-tag">店舗限定</span><span class="candidate-tag">先行公開</span><span class="candidate-meta-text">6人用（3男3女） · エモ系</span></div>
       <p>一夜にして、ロンドン中の薔薇が姿を消した。 誰がすべての薔薇を盗み去ったのか。 なぜ薔薇でなければならなかったのか。 その答えを知る者は、誰ひとりいない。 同じ頃、開業したばかりのフィールホテルには、六人の宿泊客が集っていた。 初めてこのホテルを訪れた彼らは、一見すればどこにでもいるような普通の人々。 だが、その誰もが、人には語れない不可思議な物語を胸に秘めていた――。 世界は狭い。 約70億もの人々が暮らしているのだから、いつかきっと、あなたのためならすべてを捨てるほど狂おしく愛してくれる誰かに出会えるだろう。 けれど世界は、あまりにも広すぎる。 広すぎるがゆえに、その「約70億人」という枠組みの中ですら、決して語ることのできない存在がいる。 才能が枷となり、 時間が呪いとなるとき―― 彼らの愛は、いったいどのような姿をしているのだろうか。</p>
     </div>
   </div>
